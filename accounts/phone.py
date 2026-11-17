@@ -11,12 +11,17 @@ _SEPARATORS = re.compile(r"[\s\-().\u200c\u200e\u200f]")
 _MOBILE = re.compile(r"^09\d{9}$")
 
 
+def normalize_digits(value):
+    """Convert Persian and Arabic-Indic digits to ASCII digits."""
+    return str(value).translate(_DIGIT_MAP)
+
+
 def normalize_phone(raw):
     """Return an Iranian mobile number as 09XXXXXXXXX, or None if invalid."""
     if not raw:
         return None
 
-    value = str(raw).translate(_DIGIT_MAP)
+    value = normalize_digits(raw)
     value = _SEPARATORS.sub("", value)
 
     if value.startswith("+"):

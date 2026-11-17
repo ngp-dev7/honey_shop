@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 
-from .phone import normalize_phone
+from .phone import normalize_digits, normalize_phone
 
 
 class NormalizePhoneTests(SimpleTestCase):
@@ -25,3 +25,6 @@ class NormalizePhoneTests(SimpleTestCase):
         for raw in (None, "", "abc", "12345", "0212345678", "091234567890"):
             with self.subTest(raw=raw):
                 self.assertIsNone(normalize_phone(raw))
+
+    def test_normalize_digits_converts_persian_digits(self):
+        self.assertEqual(normalize_digits("۱۲۳۴۵۶"), "123456")
