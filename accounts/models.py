@@ -65,3 +65,25 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.phone
+
+
+class OTPRequest(models.Model):
+    """One one-time-code request. Only a hash of the code is stored."""
+
+    phone = models.CharField(_("phone number"), max_length=11, db_index=True)
+    code_hash = models.CharField(max_length=64)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+    used_at = models.DateTimeField(null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["phone", "-created_at"]),
+            models.Index(fields=["ip_address", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.phone} @ {self.created_at:%Y-%m-%d %H:%M}"
