@@ -13,3 +13,21 @@ class HomePageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'lang="en"')
         self.assertContains(response, 'dir="ltr"')
+
+
+class SiteChromeTests(TestCase):
+    def test_persian_page_offers_english(self):
+        response = self.client.get("/fa/")
+        self.assertContains(response, 'name="language" value="en"')
+        self.assertNotContains(response, 'name="language" value="fa"')
+
+    def test_english_page_offers_persian(self):
+        response = self.client.get("/en/")
+        self.assertContains(response, 'name="language" value="fa"')
+        self.assertNotContains(response, 'name="language" value="en"')
+
+    def test_language_switch_keeps_the_same_page(self):
+        response = self.client.post(
+            "/i18n/setlang/", {"language": "en", "next": "/fa/"}
+        )
+        self.assertRedirects(response, "/en/", fetch_redirect_response=False)
