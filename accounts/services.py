@@ -115,7 +115,10 @@ def verify_code(phone_raw, code_raw):
             if hmac.compare_digest(otp.code_hash, _hash_code(phone, code)):
                 otp.used_at = now
                 otp.save(update_fields=["used_at"])
-                candidate, _ = get_user_model().objects.get_or_create(phone=phone)
+                User = get_user_model()
+                candidate = User.objects.filter(phone=phone).first()
+                if candidate is None:
+                    candidate = User.objects.create_user(phone=phone)
                 if candidate.is_active:
                     user = candidate
             else:
