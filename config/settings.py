@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "accounts",
     "notifications",
     "pages",
+    "catalog",
 ]
 
 MIDDLEWARE = [
