@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "accounts",
     "notifications",
+    "pages",
 ]
 
 MIDDLEWARE = [
