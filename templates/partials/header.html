@@ -8,7 +8,8 @@
         <input type="hidden" name="next" value="{{ request.get_full_path }}">
         {% get_available_languages as LANGUAGES %}
         {% for code, name in LANGUAGES %}{% if code != LANGUAGE_CODE %}
-        <button type="submit" name="language" value="{{ code }}" lang="{{ code }}" class="btn btn-ghost">{{ name }}</button>
+        {% get_language_info for code as language_info %}
+        <button type="submit" name="language" value="{{ code }}" lang="{{ code }}" class="btn btn-ghost">{{ language_info.name_local }}</button>
         {% endif %}{% endfor %}
       </form>
       <button type="button" class="btn btn-ghost theme-toggle" data-theme-toggle hidden

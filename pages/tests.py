@@ -36,3 +36,7 @@ class SiteChromeTests(TestCase):
         response = self.client.get("/fa/")
         self.assertContains(response, "data-theme-toggle")
         self.assertContains(response, "js/theme.js")
+
+    def test_language_buttons_use_their_own_language(self):
+        self.assertContains(self.client.get("/fa/"), ">English</button>")
+        self.assertContains(self.client.get("/en/"), ">فارسی</button>")
