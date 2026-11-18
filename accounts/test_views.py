@@ -89,3 +89,23 @@ class LoginFlowTests(TestCase):
         self.client.post(VERIFY, {"code": self.last_code()})
         response = self.client.get(LOGIN)
         self.assertRedirects(response, "/fa/", fetch_redirect_response=False)
+
+
+class LogoutTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(phone=PHONE)
+        self.client.force_login(self.user)
+
+    def test_logout_requires_post(self):
+        response = self.client.get("/fa/accounts/logout/")
+        self.assertEqual(response.status_code, 405)
+        self.assertIn("_auth_user_id", self.client.session)
+
+    def test_post_logs_out_and_goes_home(self):
+        response = self.client.post("/fa/accounts/logout/")
+        self.assertRedirects(response, "/fa/", fetch_redirect_response=False)
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_english_logout_goes_to_english_home(self):
+        response = self.client.post("/en/accounts/logout/")
+        self.assertRedirects(response, "/en/", fetch_redirect_response=False)
