@@ -86,3 +86,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SMS_BACKEND = env(
     "SMS_BACKEND", default="notifications.backends.ConsoleSmsBackend"
 )
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "pages:home"
+LOGOUT_REDIRECT_URL = "pages:home"

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Log in" %} - {% translate "Honey Shop" %}{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+  <h1>{% translate "Log in or sign up" %}</h1>
+  <p class="muted">{% translate "Enter your mobile number. We will send you a verification code by SMS." %}</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% include "accounts/_field.html" with field=form.phone %}
+    {% if form.non_field_errors %}
+    <div class="form-error" role="alert">
+      {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+    </div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">{% translate "Send code" %}</button>
+  </form>
+</section>
+{% endblock %}
