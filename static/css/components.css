@@ -73,3 +73,15 @@
 .site-footer p {
   margin: 0;
 }
+
+.theme-icon {
+  display: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+:root[data-theme-choice="system"] .theme-icon--system,
+:root[data-theme-choice="light"] .theme-icon--light,
+:root[data-theme-choice="dark"] .theme-icon--dark {
+  display: block;
+}

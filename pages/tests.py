@@ -31,3 +31,8 @@ class SiteChromeTests(TestCase):
             "/i18n/setlang/", {"language": "en", "next": "/fa/"}
         )
         self.assertRedirects(response, "/en/", fetch_redirect_response=False)
+
+    def test_theme_toggle_and_script_are_present(self):
+        response = self.client.get("/fa/")
+        self.assertContains(response, "data-theme-toggle")
+        self.assertContains(response, "js/theme.js")
