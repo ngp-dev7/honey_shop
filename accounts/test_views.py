@@ -109,3 +109,21 @@ class LogoutTests(TestCase):
     def test_english_logout_goes_to_english_home(self):
         response = self.client.post("/en/accounts/logout/")
         self.assertRedirects(response, "/en/", fetch_redirect_response=False)
+
+
+class HeaderAuthLinksTests(TestCase):
+    def test_anonymous_header_has_login_link_with_next(self):
+        response = self.client.get("/fa/")
+        self.assertContains(response, 'href="/fa/accounts/login/?next=/fa/"')
+        self.assertNotContains(response, "/accounts/logout/")
+
+    def test_logged_in_header_has_logout_form_only(self):
+        user = get_user_model().objects.create_user(phone=PHONE)
+        self.client.force_login(user)
+        response = self.client.get("/fa/")
+        self.assertContains(response, 'action="/fa/accounts/logout/"')
+        self.assertNotContains(response, "/accounts/login/")
+
+    def test_login_page_header_has_no_login_link(self):
+        response = self.client.get("/fa/accounts/login/")
+        self.assertNotContains(response, 'href="/fa/accounts/login/')

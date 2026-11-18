@@ -3,6 +3,14 @@
   <div class="container site-header__inner">
     <a class="site-header__brand" href="{% url 'pages:home' %}">{% translate "Honey Shop" %}</a>
     <div class="site-header__tools">
+      {% if user.is_authenticated %}
+      <form action="{% url 'accounts:logout' %}" method="post" class="inline-form">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-ghost">{% translate "Log out" %}</button>
+      </form>
+      {% elif request.resolver_match.app_name != "accounts" %}
+      <a class="btn btn-primary" href="{% url 'accounts:login' %}?next={{ request.get_full_path|urlencode }}">{% translate "Log in" %}</a>
+      {% endif %}
       <form action="{% url 'set_language' %}" method="post" class="lang-switch">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}">
