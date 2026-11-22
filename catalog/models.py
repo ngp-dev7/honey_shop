@@ -1,9 +1,16 @@
+import uuid
+
+from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.db.models import F, Q
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from common.translated import translated
+
+from .images import process_image, validate_image
 
 
 class Category(models.Model):
@@ -115,3 +122,139 @@ class Variant(models.Model):
     @property
     def is_in_stock(self):
         return self.stock > 0
+
+
+def validate_new_image(value):
+    """Check fresh uploads only; stored files were already checked and resized."""
+    if not value._committed:
+        validate_image(value)
+
+
+def _delete_files(storage, names):
+    for name in names:
+        storage.delete(name)
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="images",
+        verbose_name=_("product"),
+    )
+    image = models.FileField(
+        _("image"),
+        upload_to="products/",
+        validators=[validate_new_image],
+        help_text=_("JPEG, PNG or WebP. It is resized automatically."),
+    )
+    alt_fa = models.CharField(_("description (Persian)"), max_length=150, blank=True)
+    alt_en = models.CharField(_("description (English)"), max_length=150, blank=True)
+    sort_order = models.PositiveSmallIntegerField(_("sort order"), default=0)
+    # Filled automatically when an image is uploaded.
+    width = models.PositiveIntegerField(editable=False, default=0)
+    height = models.PositiveIntegerField(editable=False, default=0)
+    files = models.JSONField(editable=False, default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    alt = translated("alt")
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        verbose_name = _("product image")
+        verbose_name_plural = _("product images")
+
+    def __str__(self):
+        return f"{self.product} #{self.pk}"
+
+    @property
+    def sorted_files(self):
+        """(width, storage name) pairs, smallest first."""
+        return sorted((int(width), name) for width, name in self.files.items())
+
+    @property
+    def srcset(self):
+        storage = self.image.storage
+        return ", ".join(
+            f"{storage.url(name)} {width}w" for width, name in self.sorted_files
+        )
+
+    @property
+    def small_url(self):
+        files = self.sorted_files
+        return self.image.storage.url(files[0][1]) if files else ""
+
+    def save(self, *args, **kwargs):
+        storage = self._meta.get_field("image").storage
+        new_names = []
+        old_names = []
+
+        if self.image and not self.image._committed:
+            if self.pk:
+                previous = (
+                    ProductImage.objects.filter(pk=self.pk)
+                    .values_list("files", flat=True)
+                    .first()
+                )
+                old_names = list((previous or {}).values())
+
+            processed = process_image(self.image)
+            stem = uuid.uuid4().hex
+            files = {}
+            for item in processed:
+                name = storage.save(
+                    f"products/{stem}-{item.width}.webp", ContentFile(item.data)
+                )
+                files[str(item.width)] = name
+                new_names.append(name)
+
+            largest = processed[-1]
+            self.image = files[str(largest.width)]
+            self.width = largest.width
+            self.height = largest.height
+            self.files = files
+
+        try:
+            super().save(*args, **kwargs)
+        except Exception:
+            _delete_files(storage, new_names)
+            raise
+
+        if old_names:
+            transaction.on_commit(lambda: _delete_files(storage, old_names))
+
+
+@receiver(post_delete, sender=ProductImage)
+def delete_product_image_files(sender, instance, **kwargs):
+    names = list(instance.files.values())
+    if not names and instance.image:
+        names = [instance.image.name]
+    storage = instance.image.storage
+    transaction.on_commit(lambda: _delete_files(storage, names))
+
+
+class ProductSpec(models.Model):
+    """One row of the specification table, for example "Origin: ..."."""
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="specs",
+        verbose_name=_("product"),
+    )
+    label_fa = models.CharField(_("label (Persian)"), max_length=100)
+    label_en = models.CharField(_("label (English)"), max_length=100, blank=True)
+    value_fa = models.CharField(_("value (Persian)"), max_length=200)
+    value_en = models.CharField(_("value (English)"), max_length=200, blank=True)
+    sort_order = models.PositiveSmallIntegerField(_("sort order"), default=0)
+
+    label = translated("label")
+    value = translated("value")
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        verbose_name = _("specification")
+        verbose_name_plural = _("specifications")
+
+    def __str__(self):
+        return f"{self.label}: {self.value}"
