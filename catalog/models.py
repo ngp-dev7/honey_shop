@@ -3,7 +3,7 @@ import uuid
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
-from django.db.models import F, Q
+from django.db.models import Exists, F, OuterRef, Q
 from django.db.models.functions import Mod
 from django.db.models.lookups import Exact
 from django.db.models.signals import post_delete
@@ -11,10 +11,20 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from common.formatting import RIAL_PER_TOMAN
+from common.text import digit_forms, normalize_persian
 from common.translated import translated
 
 from .images import process_image, validate_image
 from .validators import validate_whole_toman
+
+
+class CategoryQuerySet(models.QuerySet):
+    def visible(self):
+        """Active categories that have at least one active product."""
+        active_products = Product.objects.filter(
+            category=OuterRef("pk"), is_active=True
+        )
+        return self.filter(is_active=True).filter(Exists(active_products))
 
 
 class Category(models.Model):
@@ -29,6 +39,8 @@ class Category(models.Model):
     sort_order = models.PositiveSmallIntegerField(_("sort order"), default=0)
     is_active = models.BooleanField(_("active"), default=True)
 
+    objects = CategoryQuerySet.as_manager()
+
     name = translated("name")
 
     class Meta:
@@ -38,6 +50,35 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductQuerySet(models.QuerySet):
+    MAX_QUERY_LENGTH = 100
+    MAX_WORDS = 6
+    SEARCH_FIELDS = (
+        "name_fa",
+        "name_en",
+        "summary_fa",
+        "summary_en",
+        "category__name_fa",
+        "category__name_en",
+    )
+
+    def visible(self):
+        """Products a visitor may see: active, in an active category."""
+        return self.filter(is_active=True, category__is_active=True)
+
+    def search(self, query):
+        """Every word must match somewhere; Persian typing habits are handled."""
+        words = normalize_persian(query or "")[: self.MAX_QUERY_LENGTH].split()
+        result = self
+        for word in words[: self.MAX_WORDS]:
+            condition = Q()
+            for form in digit_forms(word):
+                for field in self.SEARCH_FIELDS:
+                    condition |= Q(**{f"{field}__icontains": form})
+            result = result.filter(condition)
+        return result
 
 
 class Product(models.Model):
@@ -65,6 +106,8 @@ class Product(models.Model):
     created_at = models.DateTimeField(_("created at"), auto_now_add=True)
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
 
+    objects = ProductQuerySet.as_manager()
+
     name = translated("name")
     summary = translated("summary")
     description = translated("description")
@@ -76,6 +119,26 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    # The helpers below read prefetched data, so a list page does not query
+    # the database once per product.
+    @property
+    def active_variants(self):
+        return [v for v in self.variants.all() if v.is_active]
+
+    @property
+    def from_variant(self):
+        """The cheapest active size, or None."""
+        variants = self.active_variants
+        return min(variants, key=lambda v: v.price_rial) if variants else None
+
+    @property
+    def is_available(self):
+        return any(v.is_in_stock for v in self.active_variants)
+
+    @property
+    def main_image(self):
+        return next(iter(self.images.all()), None)
 
 
 class Variant(models.Model):
@@ -137,6 +200,13 @@ class Variant(models.Model):
     @property
     def is_in_stock(self):
         return self.stock > 0
+
+    @property
+    def discount_percent(self):
+        """Discount in whole percent, rounded down. 0 when there is none."""
+        if not self.old_price_rial or self.old_price_rial <= self.price_rial:
+            return 0
+        return (self.old_price_rial - self.price_rial) * 100 // self.old_price_rial
 
 
 def validate_new_image(value):
