@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n catalog_extras %}
+
+{% block title %}{% if category %}{{ category.name }}{% else %}{% translate "Products" %}{% endif %} - {% translate "Honey Shop" %}{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <h1>{% if category %}{{ category.name }}{% else %}{% translate "Products" %}{% endif %}</h1>
+  <p class="muted">
+    {% blocktranslate with n=count|localnum count counter=count %}{{ n }} product{% plural %}{{ n }} products{% endblocktranslate %}
+  </p>
+</header>
+
+<form method="get" action="{{ request.path }}" class="search-form" role="search">
+  <label class="visually-hidden" for="q">{% translate "Search products" %}</label>
+  <input type="search" id="q" name="q" value="{{ query }}" class="input" maxlength="100" placeholder="{% translate 'Search products' %}">
+  <button type="submit" class="btn btn-primary">{% translate "Search" %}</button>
+</form>
+
+<nav aria-label="{% translate 'Categories' %}">
+  <ul class="chips">
+    <li><a class="chip" href="{% url 'catalog:product_list' %}{{ query_suffix }}"{% if not category %} aria-current="page"{% endif %}>{% translate "All" %}</a></li>
+    {% for item in categories %}
+    <li><a class="chip" href="{% url 'catalog:category' item.slug %}{{ query_suffix }}"{% if item == category %} aria-current="page"{% endif %}>{{ item.name }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+
+{% if products %}
+<ul class="product-grid">
+  {% for product in products %}
+  <li>{% include "catalog/_product_card.html" %}</li>
+  {% endfor %}
+</ul>
+{% include "catalog/_pagination.html" %}
+{% else %}
+<p>{% translate "No products found." %}</p>
+{% endif %}
+{% endblock %}

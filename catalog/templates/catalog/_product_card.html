@@ -1,0 +1,32 @@
+{% load i18n catalog_extras %}
+{% with variant=product.from_variant image=product.main_image %}
+<article class="product-card">
+  <div class="product-card__media">
+    {% if image %}
+    <img src="{{ image.small_url }}" srcset="{{ image.srcset }}"
+         sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 33vw, 50vw"
+         width="{{ image.width }}" height="{{ image.height }}"
+         alt="{{ image.alt }}"
+         loading="{% if forloop.counter <= 4 %}eager{% else %}lazy{% endif %}">
+    {% else %}
+    <div class="product-card__placeholder" aria-hidden="true"></div>
+    {% endif %}
+    {% if not product.is_available %}
+    <span class="badge">{% translate "Out of stock" %}</span>
+    {% elif variant.discount_percent %}
+    <span class="badge badge--sale" dir="ltr">{{ variant.discount_percent|localnum }}%</span>
+    {% endif %}
+  </div>
+  <div class="product-card__body">
+    <h2 class="product-card__title">{{ product.name }}</h2>
+    {% if product.summary %}<p class="product-card__summary muted">{{ product.summary }}</p>{% endif %}
+    {% if variant %}
+    <p class="price">
+      {% if product.active_variants|length > 1 %}<span class="muted">{% translate "From" %}</span>{% endif %}
+      <span class="price__now">{{ variant.price_rial|price }}</span>
+      {% if variant.discount_percent %}<span class="price__old">{{ variant.old_price_rial|price }}</span>{% endif %}
+    </p>
+    {% endif %}
+  </div>
+</article>
+{% endwith %}
