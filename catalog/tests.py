@@ -81,3 +81,32 @@ class CatalogRulesTests(TestCase):
         product = make_product()
         self.assertFalse(make_variant(product, stock=0).is_in_stock)
         self.assertTrue(make_variant(product, stock=3).is_in_stock)
+
+
+class WholeTomanPriceTests(TestCase):
+    def setUp(self):
+        self.product = make_product()
+
+    def test_valid_prices_pass(self):
+        for price in (10, 1_200_000):
+            with self.subTest(price=price):
+                make_variant(self.product, price=price).full_clean()
+
+    def test_price_must_be_a_multiple_of_ten_rial(self):
+        for price in (11, 1234, 9_999_999):
+            with self.subTest(price=price):
+                with self.assertRaises(ValidationError) as caught:
+                    make_variant(self.product, price=price).full_clean()
+                self.assertIn("price_rial", caught.exception.message_dict)
+
+    def test_old_price_must_also_be_a_multiple_of_ten_rial(self):
+        variant = make_variant(self.product, price=1000, old_price=1505)
+        with self.assertRaises(ValidationError) as caught:
+            variant.full_clean()
+        self.assertIn("old_price_rial", caught.exception.message_dict)
+
+    def test_database_rejects_prices_that_are_not_whole_toman(self):
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            make_variant(self.product, price=1234).save()
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            make_variant(self.product, sku="B-1", price=1000, old_price=1505).save()

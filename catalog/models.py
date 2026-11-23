@@ -4,13 +4,17 @@ from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.db.models import F, Q
+from django.db.models.functions import Mod
+from django.db.models.lookups import Exact
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from common.formatting import RIAL_PER_TOMAN
 from common.translated import translated
 
 from .images import process_image, validate_image
+from .validators import validate_whole_toman
 
 
 class Category(models.Model):
@@ -90,12 +94,14 @@ class Variant(models.Model):
     label_fa = models.CharField(_("label (Persian)"), max_length=60, blank=True)
     label_en = models.CharField(_("label (English)"), max_length=60, blank=True)
     price_rial = models.PositiveBigIntegerField(
-        _("price (Rial)"), validators=[MinValueValidator(1)]
+        _("price (Rial)"),
+        validators=[MinValueValidator(1), validate_whole_toman],
     )
     old_price_rial = models.PositiveBigIntegerField(
         _("old price (Rial)"),
         null=True,
         blank=True,
+        validators=[validate_whole_toman],
         help_text=_("Optional. Must be higher than the price. Shown as a discount."),
     )
     stock = models.PositiveIntegerField(_("stock"), default=0)
@@ -113,6 +119,15 @@ class Variant(models.Model):
                 condition=Q(old_price_rial__isnull=True)
                 | Q(old_price_rial__gt=F("price_rial")),
                 name="variant_old_price_above_price",
+            ),
+            models.CheckConstraint(
+                condition=Q(Exact(Mod("price_rial", RIAL_PER_TOMAN), 0)),
+                name="variant_price_whole_toman",
+            ),
+            models.CheckConstraint(
+                condition=Q(old_price_rial__isnull=True)
+                | Q(Exact(Mod("old_price_rial", RIAL_PER_TOMAN), 0)),
+                name="variant_old_price_whole_toman",
             ),
         ]
 

@@ -142,3 +142,10 @@ class VariantInlineTests(MediaTestCase):
         self.assertContains(response, "variants-0-price_rial")
         self.assertNotContains(response, "variants-0-label_fa")
         self.assertNotContains(response, "variants-0-sort_order")
+
+    def test_admin_rejects_a_price_that_is_not_whole_toman(self):
+        data = product_form_data(self.product.category)
+        data["variants-0-price_rial"] = 1_234_567
+        response = self.client.post(reverse("admin:catalog_product_add"), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Product.objects.filter(slug="jujube-honey").exists())
