@@ -70,7 +70,8 @@ class ProductQuerySet(models.QuerySet):
 
     def search(self, query):
         """Every word must match somewhere; Persian typing habits are handled."""
-        words = normalize_persian(query or "")[: self.MAX_QUERY_LENGTH].split()
+        query = (query or "").replace("\x00", "")  # PostgreSQL cannot compare NUL
+        words = normalize_persian(query)[: self.MAX_QUERY_LENGTH].split()
         result = self
         for word in words[: self.MAX_WORDS]:
             condition = Q()

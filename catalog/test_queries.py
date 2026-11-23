@@ -139,3 +139,9 @@ class ProductHelperTests(TestCase):
 
     def test_main_image_is_none_without_images(self):
         self.assertIsNone(make("a").main_image)
+
+
+class SearchSafetyTests(TestCase):
+    def test_nul_characters_are_ignored(self):
+        make("a", name_en="Honey")
+        self.assertEqual(slugs(Product.objects.search("ho\x00ney")), {"a"})
