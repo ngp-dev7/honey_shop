@@ -1,26 +1,40 @@
+from django import forms
 from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
 
+from common.formatting import format_price
+
 from .models import Category, Product, ProductImage, ProductSpec, Variant
+
+
+class VariantInlineForm(forms.ModelForm):
+    class Meta:
+        model = Variant
+        fields = "__all__"
+        help_texts = {"price_rial": _("In Rial. 10 Rial = 1 Toman.")}
 
 
 class VariantInline(admin.TabularInline):
     model = Variant
+    form = VariantInlineForm
     extra = 1
     fields = (
         "sku",
         "weight_grams",
-        "label_fa",
-        "label_en",
         "price_rial",
+        "price_toman",
         "old_price_rial",
         "stock",
-        "sort_order",
         "is_active",
     )
+    readonly_fields = ("price_toman",)
+
+    @admin.display(description=_("price (Toman)"))
+    def price_toman(self, obj):
+        return format_price(obj.price_rial) if obj.pk else "-"
 
 
 class ProductImageInline(admin.StackedInline):

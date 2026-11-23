@@ -111,3 +111,34 @@ class CatalogAdminTests(MediaTestCase):
         self.client.post(url, post)
         self.product.refresh_from_db()
         self.assertTrue(self.product.is_active)
+
+
+class VariantInlineTests(MediaTestCase):
+    def setUp(self):
+        super().setUp()
+        admin_user = get_user_model().objects.create_superuser(
+            phone="09120000002", password="a-long-test-password-123"
+        )
+        self.client.force_login(admin_user)
+        self.product = make_product()
+        Variant.objects.create(
+            product=self.product,
+            sku="X-500",
+            weight_grams=500,
+            price_rial=12_000_000,
+            stock=3,
+        )
+
+    def change_page(self, language):
+        url = f"/{language}/admin/catalog/product/{self.product.pk}/change/"
+        return self.client.get(url)
+
+    def test_price_is_shown_in_toman(self):
+        self.assertContains(self.change_page("en"), "1,200,000 Toman")
+        self.assertContains(self.change_page("fa"), "۱,۲۰۰,۰۰۰ تومان")
+
+    def test_inline_has_the_short_column_set(self):
+        response = self.change_page("en")
+        self.assertContains(response, "variants-0-price_rial")
+        self.assertNotContains(response, "variants-0-label_fa")
+        self.assertNotContains(response, "variants-0-sort_order")
