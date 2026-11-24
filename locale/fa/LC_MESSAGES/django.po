@@ -1,0 +1,322 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-24 14:35+0330\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Personal info"
+msgstr ""
+
+msgid "Permissions"
+msgstr ""
+
+msgid "Important dates"
+msgstr ""
+
+msgid "Accounts"
+msgstr "حساب‌های کاربری"
+
+msgid "Mobile number"
+msgstr "شماره موبایل"
+
+msgid "Enter a valid Iranian mobile number, like 09123456789."
+msgstr "یک شماره موبایل معتبر ایرانی وارد کنید، مانند ۰۹۱۲۳۴۵۶۷۸۹."
+
+msgid "Verification code"
+msgstr "کد تأیید"
+
+#, python-format
+msgid "Enter the %(length)s-digit code."
+msgstr "کد %(length)s رقمی را وارد کنید."
+
+msgid "phone number"
+msgstr "شماره موبایل"
+
+msgid "first name"
+msgstr ""
+
+msgid "last name"
+msgstr ""
+
+msgid "active"
+msgstr ""
+
+msgid "staff status"
+msgstr ""
+
+msgid "date joined"
+msgstr ""
+
+msgid "user"
+msgstr ""
+
+msgid "users"
+msgstr ""
+
+msgid "Log in"
+msgstr "ورود"
+
+msgid "Honey Shop"
+msgstr "فروشگاه عسل"
+
+msgid "Log in or sign up"
+msgstr "ورود یا ثبت‌نام"
+
+msgid "Enter your mobile number. We will send you a verification code by SMS."
+msgstr "شماره موبایل خود را وارد کنید. کد تأیید را برایتان پیامک می‌کنیم."
+
+msgid "Send code"
+msgstr "ارسال کد"
+
+msgid "Enter the code"
+msgstr "کد را وارد کنید"
+
+msgid "We sent a verification code by SMS to this number:"
+msgstr "کد تأیید با پیامک به این شماره ارسال شد:"
+
+msgid "Wrong number or no code? Send a new code"
+msgstr "شماره اشتباه است یا کدی دریافت نکرده‌اید؟ ارسال کد جدید"
+
+msgid "Too many requests. Please try again later."
+msgstr "تعداد درخواست‌ها زیاد است. لطفاً کمی بعد دوباره تلاش کنید."
+
+msgid "We could not send the SMS. Please try again in a few minutes."
+msgstr "ارسال پیامک ممکن نشد. لطفاً چند دقیقه دیگر دوباره تلاش کنید."
+
+msgid "The code is wrong or has expired."
+msgstr "کد اشتباه است یا منقضی شده است."
+
+msgid "In Rial. 10 Rial = 1 Toman."
+msgstr "به ریال. ۱۰ ریال = ۱ تومان."
+
+msgid "price (Toman)"
+msgstr "قیمت (تومان)"
+
+msgid "preview"
+msgstr "پیش‌نمایش"
+
+msgid "products"
+msgstr "محصولات"
+
+msgid "Descriptions"
+msgstr "توضیحات"
+
+msgid "Display"
+msgstr "نمایش"
+
+msgid "image"
+msgstr "تصویر"
+
+msgid "stock"
+msgstr "موجودی"
+
+#, python-format
+msgid "%(count)d variant out of stock"
+msgid_plural "%(count)d variants out of stock"
+msgstr[0] "%(count)d بسته‌بندی ناموجود"
+msgstr[1] "%(count)d بسته‌بندی ناموجود"
+
+msgid "Activate selected products"
+msgstr "فعال‌سازی محصولات انتخاب‌شده"
+
+#, python-format
+msgid "%(count)d product activated."
+msgid_plural "%(count)d products activated."
+msgstr[0] "%(count)d محصول فعال شد."
+msgstr[1] "%(count)d محصول فعال شد."
+
+msgid "Deactivate selected products"
+msgstr "غیرفعال‌سازی محصولات انتخاب‌شده"
+
+#, python-format
+msgid "%(count)d product deactivated."
+msgid_plural "%(count)d products deactivated."
+msgstr[0] "%(count)d محصول غیرفعال شد."
+msgstr[1] "%(count)d محصول غیرفعال شد."
+
+msgid "Catalog"
+msgstr "کاتالوگ"
+
+#, python-format
+msgid "The file is too large. The maximum size is %(mb)d MB."
+msgstr "حجم فایل زیاد است. حداکثر حجم مجاز %(mb)d مگابایت است."
+
+msgid "Upload a valid JPEG, PNG or WebP image."
+msgstr "یک تصویر معتبر با فرمت JPEG، PNG یا WebP بارگذاری کنید."
+
+#, python-format
+msgid "The image has too many pixels. The maximum is %(mp)d megapixels."
+msgstr "تعداد پیکسل‌های تصویر زیاد است. حداکثر مجاز %(mp)d مگاپیکسل است."
+
+msgid "slug"
+msgstr "شناسه آدرس"
+
+msgid "Latin letters, digits and hyphens. Used in the web address."
+msgstr "فقط حروف لاتین، عدد و خط تیره. در آدرس صفحه استفاده می‌شود."
+
+msgid "name (Persian)"
+msgstr "نام (فارسی)"
+
+msgid "name (English)"
+msgstr "نام (انگلیسی)"
+
+msgid "sort order"
+msgstr "ترتیب نمایش"
+
+msgid "category"
+msgstr "دسته‌بندی"
+
+msgid "categories"
+msgstr "دسته‌بندی‌ها"
+
+msgid "summary (Persian)"
+msgstr "خلاصه (فارسی)"
+
+msgid "summary (English)"
+msgstr "خلاصه (انگلیسی)"
+
+msgid "description (Persian)"
+msgstr "توضیحات (فارسی)"
+
+msgid "description (English)"
+msgstr "توضیحات (انگلیسی)"
+
+msgid "featured"
+msgstr "ویژه"
+
+msgid "created at"
+msgstr "تاریخ ایجاد"
+
+msgid "updated at"
+msgstr "تاریخ به‌روزرسانی"
+
+msgid "product"
+msgstr "محصول"
+
+msgid "stock code (SKU)"
+msgstr "کد انبار (SKU)"
+
+msgid "weight (grams)"
+msgstr "وزن (گرم)"
+
+msgid "label (Persian)"
+msgstr "برچسب (فارسی)"
+
+msgid "label (English)"
+msgstr "برچسب (انگلیسی)"
+
+msgid "price (Rial)"
+msgstr "قیمت (ریال)"
+
+msgid "old price (Rial)"
+msgstr "قیمت قبلی (ریال)"
+
+msgid "Optional. Must be higher than the price. Shown as a discount."
+msgstr "اختیاری. باید بیشتر از قیمت باشد. به‌صورت تخفیف نمایش داده می‌شود."
+
+msgid "variant"
+msgstr "بسته‌بندی"
+
+msgid "variants"
+msgstr "بسته‌بندی‌ها"
+
+msgid "JPEG, PNG or WebP. It is resized automatically."
+msgstr "JPEG، PNG یا WebP. اندازه تصویر خودکار تنظیم می‌شود."
+
+msgid "product image"
+msgstr "تصویر محصول"
+
+msgid "product images"
+msgstr "تصاویر محصول"
+
+msgid "value (Persian)"
+msgstr "مقدار (فارسی)"
+
+msgid "value (English)"
+msgstr "مقدار (انگلیسی)"
+
+msgid "specification"
+msgstr "مشخصه"
+
+msgid "specifications"
+msgstr "مشخصات"
+
+msgid "Pages"
+msgstr "صفحه‌ها"
+
+msgid "Previous"
+msgstr "قبلی"
+
+#, python-format
+msgid "Page %(number)s of %(total)s"
+msgstr "صفحه %(number)s از %(total)s"
+
+msgid "Next"
+msgstr "بعدی"
+
+msgid "Out of stock"
+msgstr "ناموجود"
+
+msgid "From"
+msgstr "از"
+
+msgid "Products"
+msgstr "محصولات"
+
+#, python-format
+msgid "%(n)s product"
+msgid_plural "%(n)s products"
+msgstr[0] "%(n)s محصول"
+msgstr[1] "%(n)s محصول"
+
+msgid "Search products"
+msgstr "جستجوی محصولات"
+
+msgid "Search"
+msgstr "جستجو"
+
+msgid "Categories"
+msgstr "دسته‌بندی‌ها"
+
+msgid "All"
+msgstr "همه"
+
+msgid "No products found."
+msgstr "محصولی پیدا نشد."
+
+#, python-format
+msgid ""
+"The price must be a multiple of %(unit)d Rial (a whole number of Toman)."
+msgstr "قیمت باید مضرب %(unit)d ریال باشد (تعداد صحیحی از تومان)."
+
+msgid "Natural honey"
+msgstr "عسل طبیعی"
+
+msgid "The shop is coming soon."
+msgstr "فروشگاه به‌زودی راه‌اندازی می‌شود."
+
+msgid "Log out"
+msgstr "خروج"
+
+msgid "Theme: automatic"
+msgstr "پوسته: خودکار"
+
+msgid "Theme: light"
+msgstr "پوسته: روشن"
+
+msgid "Theme: dark"
+msgstr "پوسته: تاریک"
