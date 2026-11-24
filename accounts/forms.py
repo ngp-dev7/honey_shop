@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from common.formatting import format_number
+
 from .phone import normalize_digits, normalize_phone
 from .services import OTP_LENGTH
 
@@ -50,6 +52,6 @@ class CodeForm(forms.Form):
         code = "".join(normalize_digits(self.cleaned_data["code"]).split())
         if len(code) != OTP_LENGTH or not (code.isascii() and code.isdigit()):
             raise forms.ValidationError(
-                _("Enter the %(length)s-digit code.") % {"length": OTP_LENGTH}
+                _("Enter the %(length)s-digit code.") % {"length": format_number(OTP_LENGTH)}
             )
         return code
