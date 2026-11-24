@@ -134,6 +134,11 @@ class Product(models.Model):
         return min(variants, key=lambda v: v.price_rial) if variants else None
 
     @property
+    def has_price_range(self):
+        """True when the active sizes have different prices."""
+        return len({v.price_rial for v in self.active_variants}) > 1
+
+    @property
     def is_available(self):
         return any(v.is_in_stock for v in self.active_variants)
 

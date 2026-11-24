@@ -22,7 +22,7 @@
     {% if product.summary %}<p class="product-card__summary muted">{{ product.summary }}</p>{% endif %}
     {% if variant %}
     <p class="price">
-      {% if product.active_variants|length > 1 %}<span class="muted">{% translate "From" %}</span>{% endif %}
+      {% if product.has_price_range %}<span class="muted">{% translate "From" %}</span>{% endif %}
       <span class="price__now">{{ variant.price_rial|price }}</span>
       {% if variant.discount_percent %}<span class="price__old">{{ variant.old_price_rial|price }}</span>{% endif %}
     </p>

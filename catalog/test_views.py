@@ -181,3 +181,29 @@ class TemplateFilterTests(SimpleTestCase):
             self.assertEqual(localnum(1234), "1,234")
         with translation.override("fa"):
             self.assertEqual(localnum(1234), "۱,۲۳۴")
+
+
+class PriceLabelTests(TestCase):
+    FROM_EN = '<span class="muted">From</span>'
+
+    def test_no_from_label_when_all_sizes_cost_the_same(self):
+        product = make("same")
+        add_variant(product, "S-1", 10_000, stock=1)
+        add_variant(product, "S-2", 10_000, stock=1)
+        self.assertNotContains(self.client.get(EN), self.FROM_EN)
+
+    def test_from_label_when_prices_differ(self):
+        product = make("range")
+        add_variant(product, "R-1", 10_000, stock=1)
+        add_variant(product, "R-2", 20_000, stock=1)
+        self.assertContains(self.client.get(EN), self.FROM_EN)
+
+    def test_no_from_label_for_a_single_size(self):
+        add_variant(make("one"), "O-1", 10_000, stock=1)
+        self.assertNotContains(self.client.get(EN), self.FROM_EN)
+
+    def test_inactive_sizes_do_not_count(self):
+        product = make("mixed")
+        add_variant(product, "M-1", 10_000, stock=1)
+        add_variant(product, "M-2", 20_000, stock=1, is_active=False)
+        self.assertNotContains(self.client.get(EN), self.FROM_EN)
